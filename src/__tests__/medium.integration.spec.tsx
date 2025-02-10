@@ -113,6 +113,25 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(repeatTypeList.map((option) => option.textContent)).toContain('매월');
     expect(repeatTypeList.map((option) => option.textContent)).toContain('매년');
   });
+  it('일정 수정 시 반복 유형을 선택할 수 있다.', async () => {
+    const { user } = setup(<App />);
+    setupMockHandlerUpdating();
+
+    await user.click(await screen.findByLabelText('Edit event'));
+    const repeatSchedule = await screen.findByLabelText('반복 일정');
+    const isRepeating = repeatSchedule.dataset.checked;
+    isRepeating ? null : user.click(repeatSchedule);
+
+    await user.click(await screen.findByLabelText('반복 유형'));
+
+    const repeatTypeSelect = within(await screen.findByLabelText('반복 유형'));
+    const repeatTypeList = repeatTypeSelect.getAllByRole('option');
+
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매일');
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매주');
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매월');
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매년');
+  });
 });
 
 describe('일정 뷰', () => {
