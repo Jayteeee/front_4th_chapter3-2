@@ -69,6 +69,13 @@ const notificationOptions = [
   { value: 1440, label: '1일 전' },
 ];
 
+const repeatTypes = [
+  { value: 'daily', label: '매일' },
+  { value: 'weekly', label: '매주' },
+  { value: 'monthly', label: '매월' },
+  { value: 'yearly', label: '매년' },
+];
+
 function App() {
   const {
     title,
@@ -360,6 +367,19 @@ function App() {
             <Checkbox isChecked={isRepeating} onChange={(e) => setIsRepeating(e.target.checked)}>
               반복 일정
             </Checkbox>
+            {isRepeating && (
+              <Select
+                id="repeat-type-select"
+                value={repeatType}
+                onChange={(e) => setRepeatType(e.target.value as RepeatType)}
+              >
+                {repeatTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </Select>
+            )}
           </FormControl>
 
           <FormControl>

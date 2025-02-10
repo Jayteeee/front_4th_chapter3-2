@@ -97,6 +97,22 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     expect(eventList.queryByText('삭제할 이벤트')).not.toBeInTheDocument();
   });
+
+  it('일정 생성 시 반복 유형을 선택할 수 있다.', async () => {
+    setupMockHandlerCreation();
+
+    const { user } = setup(<App />);
+
+    await user.click(await screen.findByLabelText('반복 유형'));
+
+    const repeatTypeSelect = within(await screen.findByLabelText('반복 유형'));
+    const repeatTypeList = repeatTypeSelect.getAllByRole('option');
+
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매일');
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매주');
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매월');
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('매년');
+  });
 });
 
 describe('일정 뷰', () => {
