@@ -97,7 +97,9 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     expect(eventList.queryByText('삭제할 이벤트')).not.toBeInTheDocument();
   });
+});
 
+describe('일정 반복 설정 기능', () => {
   it('일정 생성 시 반복 유형을 선택할 수 있다.', async () => {
     setupMockHandlerCreation();
 
@@ -131,6 +133,15 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(repeatTypeList.map((option) => option.textContent)).toContain('매주');
     expect(repeatTypeList.map((option) => option.textContent)).toContain('매월');
     expect(repeatTypeList.map((option) => option.textContent)).toContain('매년');
+  });
+  it('반복 일정 선택 후 반복 유형을 매월로 선택 시, 반복 간격을 개월 단위로 설정할 수 있다.', async () => {
+    setupMockHandlerCreation();
+
+    const { user } = setup(<App />);
+
+    const repeatIntervalLabel = screen.getByTestId('repeat-interval').closest('span')!;
+
+    expect(repeatTypeList.map((option) => option.textContent)).toContain('개월마다');
   });
 });
 
