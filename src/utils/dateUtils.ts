@@ -51,8 +51,50 @@ export function getWeeksAtMonth(currentDate: Date) {
   return weeks;
 }
 
+export function isSameDay(date1: Date, date2: Date): boolean {
+  return date1 === date2;
+}
+
 export function getEventsForDay(events: Event[], date: number): Event[] {
-  return events.filter((event) => new Date(event.date).getDate() === date);
+  // return events.filter((event) => new Date(event.date).getDate() === date);
+  return events.filter((event) => {
+    const eventDate = new Date(event.date);
+
+    if (isSameDay(eventDate.getDate(), date)) {
+      return true;
+    }
+
+    if (event.repeat.type !== 'none') {
+      const interval = event.repeat.interval;
+      const repeatEndDate = new Date(event.repeat.endDate);
+      let nextDate = new Date(eventDate);
+
+      while (nextDate <= repeatEndDate) {
+        if (isSameDay(nextDate.getDate(), date)) {
+          return true;
+        }
+
+        switch (event.repeat.type) {
+          case '매일':
+            nextDate.setDate(nextDate.getDate() + interval);
+            break;
+          case '매주':
+            nextDate.setDate(nextDate.getDate() + interval * 7);
+            break;
+          case '매월':
+            nextDate.setMonth(nextDate.getMonth() + interval);
+            break;
+          case '매년':
+            nextDate.setFullYear(nextDate.getFullYear() + interval);
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
+    return false;
+  });
 }
 
 export function formatWeek(targetDate: Date) {

@@ -37,6 +37,7 @@ import {
   Tr,
   useToast,
   VStack,
+  Badge,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
@@ -69,11 +70,11 @@ const notificationOptions = [
   { value: 1440, label: '1일 전' },
 ];
 
-const repeatTypes = [
-  { value: 'daily', label: '매일' },
-  { value: 'weekly', label: '매주' },
-  { value: 'monthly', label: '매월' },
-  { value: 'yearly', label: '매년' },
+const repeatIntervalLabels = [
+  { value: 'daily', label: '일마다' },
+  { value: 'weekly', label: '주마다' },
+  { value: 'monthly', label: '개월마다' },
+  { value: 'yearly', label: '년마다' },
 ];
 
 function App() {
@@ -154,6 +155,7 @@ function App() {
       description,
       location,
       category,
+      isRepeating,
       repeat: {
         type: isRepeating ? repeatType : 'none',
         interval: repeatInterval,
@@ -211,6 +213,11 @@ function App() {
                             <Text fontSize="sm" noOfLines={1}>
                               {event.title}
                             </Text>
+                            {event.repeat.type !== 'none' && (
+                              <Badge colorScheme="white" ml={2}>
+                                🗓️
+                              </Badge>
+                            )}
                           </HStack>
                         </Box>
                       );
@@ -280,6 +287,11 @@ function App() {
                                   <Text fontSize="sm" noOfLines={1}>
                                     {event.title}
                                   </Text>
+                                  {event.repeat.type !== 'none' && (
+                                    <Badge colorScheme="white" ml={2}>
+                                      🗓️
+                                    </Badge>
+                                  )}
                                 </HStack>
                               </Box>
                             );
@@ -367,19 +379,6 @@ function App() {
             <Checkbox isChecked={isRepeating} onChange={(e) => setIsRepeating(e.target.checked)}>
               반복 일정
             </Checkbox>
-            {isRepeating && (
-              <Select
-                id="repeat-type-select"
-                value={repeatType}
-                onChange={(e) => setRepeatType(e.target.value as RepeatType)}
-              >
-                {repeatTypes.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </Select>
-            )}
           </FormControl>
 
           <FormControl>
@@ -401,6 +400,7 @@ function App() {
               <FormControl>
                 <FormLabel>반복 유형</FormLabel>
                 <Select
+                  data-testid="repeat-type-select"
                   value={repeatType}
                   onChange={(e) => setRepeatType(e.target.value as RepeatType)}
                 >
@@ -418,7 +418,13 @@ function App() {
                     value={repeatInterval}
                     onChange={(e) => setRepeatInterval(Number(e.target.value))}
                     min={1}
+                    style={{ width: '60px' }}
                   />
+                  <span data-testid="repeat-interval">
+                    {repeatType === 'none'
+                      ? '일마다'
+                      : repeatIntervalLabels.find((label) => label.value === repeatType)?.label}
+                  </span>
                 </FormControl>
                 <FormControl>
                   <FormLabel>반복 종료일</FormLabel>

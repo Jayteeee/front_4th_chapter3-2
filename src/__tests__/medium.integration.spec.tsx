@@ -105,9 +105,9 @@ describe('일정 반복 설정 기능', () => {
 
     const { user } = setup(<App />);
 
-    await user.click(await screen.findByLabelText('반복 유형'));
+    await user.click(await screen.findByText('매일'));
 
-    const repeatTypeSelect = within(await screen.findByLabelText('반복 유형'));
+    const repeatTypeSelect = within(await screen.getByTestId('repeat-type-select'));
     const repeatTypeList = repeatTypeSelect.getAllByRole('option');
 
     expect(repeatTypeList.map((option) => option.textContent)).toContain('매일');
@@ -139,9 +139,48 @@ describe('일정 반복 설정 기능', () => {
 
     const { user } = setup(<App />);
 
-    const repeatIntervalLabel = screen.getByTestId('repeat-interval').closest('span')!;
+    const repeatIntervalLabel = await screen.getByTestId('repeat-interval');
 
-    expect(repeatTypeList.map((option) => option.textContent)).toContain('개월마다');
+    expect(repeatIntervalLabel.getByText('개월마다').toBeInTheDocument());
+  });
+
+  it('반복 일정은 시각적으로 구분하여 표시된다.', async () => {
+    await user.click(await screen.findByLabelText('반복 유형'));
+    await user.selectOptions(await screen.findByLabelText('반복 유형'), '매일');
+    await user.type(await screen.findByLabelText('반복 간격'), '2');
+    await user.click(await screen.findByText('저장'));
+
+    const event = await screen.findByText('반복 일정 제목');
+    expect(event).toBeInTheDocument();
+    expect(within(event).getByText('🗓️')).toBeInTheDocument();
+  });
+  it('반복 종료 조건을 지정할 수 있다.', async () => {
+    await user.click(await screen.findByLabelText('반복 유형'));
+    await user.selectOptions(await screen.findByLabelText('반복 유형'), '매주');
+    await user.type(await screen.findByLabelText('반복 간격'), '1');
+    await user.type(await screen.findByLabelText('반복 종료 날짜'), '2023-12-31');
+    await user.click(await screen.findByText('저장'));
+
+    const event = await screen.findByText('반복 일정 제목');
+    expect(event).toBeInTheDocument();
+    expect(within(event).getByText('🗓️')).toBeInTheDocument();
+  });
+  it('반복 일정을 수정하면 단일 일정으로 변경되고 반복일정 아이콘도 사라진다.', async () => {
+    await user.click(await screen.findByText('반복 일정 제목'));
+    await user.click(await screen.findByLabelText('반복 유형'));
+    await user.selectOptions(await screen.findByLabelText('반복 유형'), 'none');
+    await user.click(await screen.findByText('저장'));
+
+    const event = await screen.findByText('반복 일정 제목');
+    expect(event).toBeInTheDocument();
+    expect(within(event).queryByText('🗓️')).not.toBeInTheDocument();
+  });
+  it('반복 일정을 삭제하면 해당 일정만 삭제된다.', async () => {
+    await user.click(await screen.findByText('반복 일정 제목'));
+    await user.click(await screen.findByText('삭제'));
+
+    const event = screen.queryByText('반복 일정 제목');
+    expect(event).not.toBeInTheDocument();
   });
 });
 
