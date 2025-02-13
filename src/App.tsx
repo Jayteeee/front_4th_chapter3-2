@@ -214,7 +214,7 @@ function App() {
                               {event.title}
                             </Text>
                             {event.repeat.type !== 'none' && (
-                              <Badge colorScheme="white" ml={2}>
+                              <Badge colorScheme="white" ml={2} aria-label="repeat-icon">
                                 🗓️
                               </Badge>
                             )}
@@ -288,7 +288,7 @@ function App() {
                                     {event.title}
                                   </Text>
                                   {event.repeat.type !== 'none' && (
-                                    <Badge colorScheme="white" ml={2}>
+                                    <Badge colorScheme="white" ml={2} aria-label="repeat-icon">
                                       🗓️
                                     </Badge>
                                   )}
